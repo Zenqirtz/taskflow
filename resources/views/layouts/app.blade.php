@@ -43,19 +43,19 @@
         }
 
         [data-theme="dark"] {
-            --bg-primary: #0b1220;
-            --bg-surface: #151c2c;
-            --bg-input: #1e293b;
-            --bg-sidebar: #111827;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
+            --bg-primary: #0f1419;
+            --bg-surface: #1a1f2e;
+            --bg-input: #252d3d;
+            --bg-sidebar: #0f1419;
+            --text-primary: #ecf1ff;
+            --text-secondary: #a8b0c5;
             --text-muted: #64748b;
-            --border-color: #293548;
-            --border-hover: #334155;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --primary-dark: #4338ca;
-            --primary-light: #1e1b4b;
+            --border-color: #2a3548;
+            --border-hover: #3a4555;
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --primary-dark: #6d28d9;
+            --primary-light: #2d1f4a;
             --danger-bg: #450a0a;
             --danger-border: #7f1d1d;
             --warning-bg: #451a03;
@@ -92,45 +92,47 @@
             flex-shrink: 0;
             background: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
-            padding: 24px 16px;
+            padding: 24px 20px;
             display: flex;
             flex-direction: column;
             position: sticky;
             top: 0;
             height: 100vh;
             overflow-y: auto;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, border-color 0.2s;
         }
 
         .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 0 12px 24px;
+            gap: 12px;
+            padding: 0 8px 24px;
         }
 
         .sidebar-brand .brand-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--primary);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: #fff;
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .sidebar-brand .brand-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .sidebar-nav {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
             flex: 1;
         }
 
@@ -139,24 +141,24 @@
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 16px 12px 8px;
+            letter-spacing: 0.06em;
+            padding: 20px 8px 8px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
+            gap: 12px;
+            padding: 12px 12px;
             border-radius: 8px;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            transition: all 0.15s;
+            transition: all 0.15s ease;
             min-height: 44px;
         }
 
-        .nav-link i { width: 20px; text-align: center; font-size: 16px; }
+        .nav-link i { width: 20px; text-align: center; font-size: 15px; color: inherit; }
 
         .nav-link:hover {
             background: var(--bg-input);
@@ -167,12 +169,16 @@
             background: var(--primary-light);
             color: var(--primary);
             font-weight: 600;
+            box-shadow: inset 2px 0 0 0 var(--primary);
         }
 
         .sidebar-footer {
             border-top: 1px solid var(--border-color);
-            padding-top: 12px;
-            margin-top: 12px;
+            padding-top: 16px;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .main {
