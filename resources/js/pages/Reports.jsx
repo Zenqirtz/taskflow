@@ -12,16 +12,22 @@ function dateKey(value) {
 }
 
 function BarChart({ data, labels, colors, title }) {
+    const [hoveredIndex, setHoveredIndex] = useState(null);
     const maxVal = Math.max(...data.map((d) => d.value), 1);
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-pink-50 p-6">
             {title && <h3 className="text-base font-bold text-[#2D3E7A] mb-4">{title}</h3>}
-            <div className="flex items-end justify-between gap-3 h-40">
+            <div className="relative flex items-end justify-between gap-3 h-40">
                 {data.map((item, i) => (
-                    <div key={i} className="flex flex-col items-center gap-2 flex-1">
+                    <div
+                        key={i}
+                        className="flex flex-col items-center gap-2 flex-1 relative"
+                        onMouseEnter={() => setHoveredIndex(i)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
                         <div
-                            className="w-full rounded-t-lg transition-all hover:opacity-80"
+                            className="w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer group"
                             style={{
                                 height: `${(item.value / maxVal) * 100}%`,
                                 minHeight: item.value > 0 ? '8px' : '4px',
@@ -29,18 +35,15 @@ function BarChart({ data, labels, colors, title }) {
                             }}
                         />
                         <span className="text-[10px] text-gray-500 font-medium">{labels[i] || ''}</span>
-                    </div>
-                ))}
-            </div>
-            <div className="mt-4 flex flex-wrap gap-3">
-                {data.map((item, i) => (
-                    <div key={i} className="flex items-center gap-1.5 text-xs">
-                        <span
-                            className="w-2.5 h-2.5 rounded-sm"
-                            style={{ backgroundColor: colors[i % colors.length] }}
-                        />
-                        <span className="text-gray-600">{item.label}</span>
-                        <span className="font-bold text-gray-800">{item.value}</span>
+                        
+                        {/* Tooltip */}
+                        {hoveredIndex === i && (
+                            <div className="absolute bottom-full mb-2 bg-gray-900 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap animate-pop-in z-10">
+                                <div className="text-[10px] text-gray-400 mb-0.5">{item.label}</div>
+                                <div>{item.value} task{item.value !== 1 ? 's' : ''}</div>
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900" />
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
