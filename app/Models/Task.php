@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,5 +43,13 @@ class Task extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Prepare date for array/json serialization in WIB timezone.
+     */
+    protected function serializeDate(\DateTimeInterface $date): string
+    {
+        return Carbon::parse($date)->setTimezone('Asia/Jakarta')->format('Y-m-d\TH:i');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -43,6 +44,18 @@ class TaskController extends Controller
             'remind_at' => 'nullable|date_format:Y-m-d\TH:i',
         ]);
 
+        // Convert time to UTC for storage (assuming input in WIB)
+        if (! empty($validated['due_date'])) {
+            $validated['due_date'] = Carbon::parse($validated['due_date'], 'Asia/Jakarta')
+                ->setTimezone('UTC')
+                ->format('Y-m-d H:i:s');
+        }
+        if (! empty($validated['remind_at'])) {
+            $validated['remind_at'] = Carbon::parse($validated['remind_at'], 'Asia/Jakarta')
+                ->setTimezone('UTC')
+                ->format('Y-m-d H:i:s');
+        }
+
         $task = $this->currentUser($request)->tasks()->create($validated);
 
         return new JsonResource($task->load('category'));
@@ -71,6 +84,18 @@ class TaskController extends Controller
             'remind_at' => 'nullable|date_format:Y-m-d\TH:i',
             'completed_at' => 'nullable|date_format:Y-m-d\TH:i',
         ]);
+
+        // Convert time to UTC for storage (assuming input in WIB)
+        if (! empty($validated['due_date'])) {
+            $validated['due_date'] = Carbon::parse($validated['due_date'], 'Asia/Jakarta')
+                ->setTimezone('UTC')
+                ->format('Y-m-d H:i:s');
+        }
+        if (! empty($validated['remind_at'])) {
+            $validated['remind_at'] = Carbon::parse($validated['remind_at'], 'Asia/Jakarta')
+                ->setTimezone('UTC')
+                ->format('Y-m-d H:i:s');
+        }
 
         $task->update($validated);
 
