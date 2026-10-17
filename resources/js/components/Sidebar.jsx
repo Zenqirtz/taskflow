@@ -113,14 +113,16 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
                                 if (onClose) onClose();
                             }}
                             title={isCollapsed ? item.label : ''}
-                            className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                            className={`flex items-center w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                                isCollapsed ? 'justify-center' : 'gap-3'
+                            } ${
                                 isActive
                                     ? 'bg-[#E94B6F] text-white shadow-lg shadow-pink-900/30'
                                     : 'text-white/60 hover:text-white hover:bg-white/10'
                             }`}
                         >
                             {item.icon}
-                            {!isCollapsed && item.label}
+                            {!isCollapsed && <span className="truncate">{item.label}</span>}
                         </button>
                     );
                 })}
