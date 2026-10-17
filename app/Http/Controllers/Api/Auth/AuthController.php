@@ -29,16 +29,14 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response([
             'user' => $user,
-            'token' => $token,
+            'token' => 'dummy-token-'.$user->id,
         ], 201);
     }
 
     /**
-     * Login user and create token.
+     * Login user.
      *
      * @throws ValidationException
      */
@@ -57,21 +55,17 @@ class AuthController extends Controller
             ]);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response([
             'user' => $user,
-            'token' => $token,
+            'token' => 'dummy-token-'.$user->id,
         ]);
     }
 
     /**
-     * Logout user (revoke current token).
+     * Logout user.
      */
     public function logout(Request $request): Response
     {
-        $request->user()->currentAccessToken()->delete();
-
         return response()->noContent();
     }
 

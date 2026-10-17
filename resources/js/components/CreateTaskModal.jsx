@@ -1,55 +1,66 @@
-import React, { useState } from 'react';
-
-const CATEGORIES = [
-    { name: 'Design', color: 'bg-[#E94B6F] text-white', activeBg: 'bg-[#E94B6F]' },
-    { name: 'Dev', color: 'bg-[#2D3E7A] text-white', activeBg: 'bg-[#2D3E7A]' },
-    { name: 'Meeting', color: 'bg-[#FFE6F0] text-[#E94B6F]', activeBg: 'bg-[#FFE6F0]' },
-    { name: 'Writing', color: 'bg-amber-100 text-amber-700', activeBg: 'bg-amber-500' },
-    { name: 'Personal', color: 'bg-emerald-100 text-emerald-700', activeBg: 'bg-emerald-500' },
-];
+import React, { useState, useEffect } from 'react';
+import { getCategories } from '../lib/api';
 
 export default function CreateTaskModal({ isOpen, onClose, onSave }) {
     const today = new Date().toISOString().split('T')[0];
 
     const [title, setTitle] = useState('');
-    const [category, setCategory] = useState('Design');
+    const [categories, setCategories] = useState([]);
+    const [categoryId, setCategoryId] = useState(null);
     const [date, setDate] = useState(today);
     const [startTime, setStartTime] = useState('09:00');
-    const [endTime, setEndTime] = useState('10:00');
     const [description, setDescription] = useState('');
     const [reminder, setReminder] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            getCategories()
+                .then((cats) => {
+                    setCategories(cats);
+                    if (cats.length > 0 && !categoryId) {
+                        setCategoryId(cats[0].id);
+                    }
+                })
+                .catch(() => {});
+        }
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        if (!title.trim()) return;
+        if (!title.trim() || isSubmitting) return;
 
-        onSave({
-            id: Date.now(),
+        setIsSubmitting(true);
+
+        const dueDateTime = date ? `${date}T${startTime}` : null;
+
+        const payload = {
             title: title.trim(),
-            category,
-            date,
-            time: `${startTime} - ${endTime}`,
-            description: description.trim(),
-            reminder,
-            done: false,
-        });
+            category_id: categoryId,
+            due_date: dueDateTime,
+            description: description.trim() || null,
+            remind_at: reminder && dueDateTime ? dueDateTime : null,
+        };
 
-        // Reset form
-        setTitle('');
-        setCategory('Design');
-        setDate(today);
-        setStartTime('09:00');
-        setEndTime('10:00');
-        setDescription('');
-        setReminder(false);
-        onClose();
+        try {
+            await onSave(payload);
+
+            // Reset form
+            setTitle('');
+            setDate(today);
+            setStartTime('09:00');
+            setDescription('');
+            setReminder(false);
+            onClose();
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-            {/* Modal Card */}
             <div
                 className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-pink-100 transition-all transform scale-100"
                 onClick={(e) => e.stopPropagation()}
@@ -84,36 +95,42 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
                             placeholder="e.g. Design mobile app dashboard"
                             className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#E94B6F] focus:ring-1 focus:ring-[#E94B6F] transition-all"
                             autoFocus
+                            required
                         />
                     </div>
 
                     {/* Category Selector */}
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                            Category
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                            {CATEGORIES.map((cat) => (
-                                <button
-                                    type="button"
-                                    key={cat.name}
-                                    onClick={() => setCategory(cat.name)}
-                                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                                        category === cat.name
-                                            ? `${cat.activeBg} text-white shadow-md scale-105`
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    {cat.name}
-                                </button>
-                            ))}
+                    {categories.length > 0 && (
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                Category
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                                {categories.map((cat) => {
+                                    const isSelected = categoryId === cat.id;
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={cat.id}
+                                            onClick={() => setCategoryId(cat.id)}
+                                            style={isSelected ? { backgroundColor: cat.color, color: '#fff' } : {}}
+                                            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                                                isSelected
+                                                    ? 'shadow-md scale-105'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                            {cat.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Date & Time Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {/* Date */}
-                        <div className="sm:col-span-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
                             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                                 Date
                             </label>
@@ -125,28 +142,14 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
                             />
                         </div>
 
-                        {/* Start Time */}
                         <div>
                             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                                Start
+                                Due Time
                             </label>
                             <input
                                 type="time"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
-                                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-[#E94B6F] transition-all"
-                            />
-                        </div>
-
-                        {/* End Time */}
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                                End
-                            </label>
-                            <input
-                                type="time"
-                                value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
                                 className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-[#E94B6F] transition-all"
                             />
                         </div>
@@ -176,11 +179,10 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
                             </div>
                             <div>
                                 <p className="text-xs font-bold text-[#2D3E7A]">Set Reminder</p>
-                                <p className="text-[10px] text-gray-400">Get notification 15m before</p>
+                                <p className="text-[10px] text-gray-400">Get notification on due time</p>
                             </div>
                         </div>
 
-                        {/* Toggle switch */}
                         <button
                             type="button"
                             onClick={() => setReminder(!reminder)}
@@ -207,10 +209,10 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
                         </button>
                         <button
                             type="submit"
-                            disabled={!title.trim()}
+                            disabled={!title.trim() || isSubmitting}
                             className="flex-1 py-3 rounded-xl bg-[#2D3E7A] text-white text-sm font-semibold hover:bg-[#E94B6F] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-blue-900/10"
                         >
-                            Create Task
+                            {isSubmitting ? 'Creating...' : 'Create Task'}
                         </button>
                     </div>
                 </form>

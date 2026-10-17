@@ -1,40 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import CalendarWidget from '../components/CalendarWidget';
 import TaskList from '../components/TaskList';
 import DataReports from '../components/DataReports';
 import CreateTaskModal from '../components/CreateTaskModal';
+import { getTasks, createTask, updateTask, deleteTask } from '../lib/api';
 
 const today = new Date();
-const todayStr = today.toISOString().split('T')[0];
-
-const initialTodayTasks = [
-    { id: 1, title: 'Design landing page mockup', time: '09:00 - 10:30', category: 'Design', done: true, date: todayStr },
-    { id: 2, title: 'Write unit tests for API', time: '11:00 - 12:00', category: 'Dev', done: false, date: todayStr },
-    { id: 3, title: 'Team sync call', time: '13:00 - 13:30', category: 'Meeting', done: false, date: todayStr },
-    { id: 4, title: 'Review pull requests', time: '14:00 - 15:00', category: 'Dev', done: false, date: todayStr },
-];
-
-const initialTomorrowTasks = [
-    { id: 5, title: 'Client presentation prep', time: '09:00 - 11:00', category: 'Meeting', done: false },
-    { id: 6, title: 'Update project documentation', time: '13:00 - 14:00', category: 'Writing', done: false },
-];
 
 export default function Dashboard() {
     const [activePage, setActivePage] = useState('dashboard');
     const [selectedDate, setSelectedDate] = useState(today.getDate());
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [tasks, setTasks] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [todayTasks, setTodayTasks] = useState(initialTodayTasks);
-    const [tomorrowTasks, setTomorrowTasks] = useState(initialTomorrowTasks);
-
-    function handleCreateTask(newTask) {
-        if (newTask.date === todayStr) {
-            setTodayTasks((prev) => [newTask, ...prev]);
-        } else {
-            setTomorrowTasks((prev) => [newTask, ...prev]);
+    async function loadTasks() {
+        try {
+            const data = await getTasks();
+            setTasks(data);
+        } catch (err) {
+            console.error('Failed to load tasks', err);
+        } finally {
+            setIsLoading(false);
         }
     }
+
+    useEffect(() => {
+        loadTasks();
+    }, []);
+
+    // Filter today & tomorrow tasks based on due_date
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const tomorrowStart = todayStart + 24 * 60 * 60 * 1000;
+    const dayAfterTomorrow = tomorrowStart + 24 * 60 * 60 * 1000;
+
+    const todayTasks = tasks.filter((t) => {
+        if (!t.due_date) return true; // uncategorized default to today
+        const taskTime = new Date(t.due_date).getTime();
+        return taskTime >= todayStart && taskTime < tomorrowStart;
+    });
+
+    const tomorrowTasks = tasks.filter((t) => {
+        if (!t.due_date) return false;
+        const taskTime = new Date(t.due_date).getTime();
+        return taskTime >= tomorrowStart && taskTime < dayAfterTomorrow;
+    });
+
+    async function handleCreateTask(payload) {
+        const newTask = await createTask(payload);
+        setTasks((prev) => [newTask, ...prev]);
+    }
+
+    async function handleToggleTask(task) {
+        const nextStatus = task.status === 'completed' ? 'pending' : 'completed';
+        const updated = await updateTask(task.id, {
+            status: nextStatus,
+            completed_at: nextStatus === 'completed' ? new Date().toISOString().slice(0, 16) : null,
+        });
+
+        setTasks((prev) => prev.map((t) => (t.id === task.id ? updated : t)));
+    }
+
+    async function handleDeleteTask(taskId) {
+        await deleteTask(taskId);
+        setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    }
+
+    const completedCount = tasks.filter((t) => t.status === 'completed').length;
+    const remainingCount = tasks.filter((t) => t.status !== 'completed').length;
 
     return (
         <div className="flex h-screen bg-[#FFF9F0] overflow-hidden">
@@ -44,7 +78,6 @@ export default function Dashboard() {
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto p-6 lg:p-8">
                 <div className="max-w-7xl mx-auto">
-
                     {/* Header */}
                     <div className="flex items-center justify-between mb-8">
                         <div>
@@ -64,76 +97,90 @@ export default function Dashboard() {
                         </button>
                     </div>
 
-                    {/* Grid Layout */}
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-                        {/* Left Column: Tasks */}
-                        <div className="xl:col-span-2 flex flex-col gap-6">
-
-                            {/* Today's Tasks */}
-                            <div className="bg-white rounded-2xl shadow-sm border border-pink-50 p-6">
-                                <div className="flex items-center justify-between mb-5">
-                                    <h2 className="text-lg font-bold text-[#2D3E7A]">
-                                        Today's Tasks
-                                        <span className="ml-2 text-xs font-medium bg-[#FFE6F0] text-[#E94B6F] px-2 py-0.5 rounded-full">
-                                            {todayTasks.length}
-                                        </span>
-                                    </h2>
-                                    <span className="text-xs text-gray-400">
-                                        {today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                    </span>
-                                </div>
-                                <TaskList tasks={todayTasks} />
-                            </div>
-
-                            {/* Tomorrow's Tasks */}
-                            <div className="bg-white rounded-2xl shadow-sm border border-pink-50 p-6">
-                                <div className="flex items-center justify-between mb-5">
-                                    <h2 className="text-lg font-bold text-[#2D3E7A]">
-                                        Tomorrow
-                                        <span className="ml-2 text-xs font-medium bg-[#FFE6F0] text-[#E94B6F] px-2 py-0.5 rounded-full">
-                                            {tomorrowTasks.length}
-                                        </span>
-                                    </h2>
-                                </div>
-                                <TaskList tasks={tomorrowTasks} />
-                            </div>
-
-                            {/* Data Reports */}
-                            <DataReports />
+                    {isLoading ? (
+                        <div className="py-20 flex justify-center items-center">
+                            <div className="w-8 h-8 border-4 border-[#E94B6F] border-t-transparent rounded-full animate-spin" />
                         </div>
+                    ) : (
+                        /* Grid Layout */
+                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                            {/* Left Column: Tasks */}
+                            <div className="xl:col-span-2 flex flex-col gap-6">
+                                {/* Today's Tasks */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-pink-50 p-6">
+                                    <div className="flex items-center justify-between mb-5">
+                                        <h2 className="text-lg font-bold text-[#2D3E7A]">
+                                            Today's Tasks
+                                            <span className="ml-2 text-xs font-medium bg-[#FFE6F0] text-[#E94B6F] px-2 py-0.5 rounded-full">
+                                                {todayTasks.length}
+                                            </span>
+                                        </h2>
+                                        <span className="text-xs text-gray-400">
+                                            {today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                        </span>
+                                    </div>
+                                    <TaskList
+                                        tasks={todayTasks}
+                                        onToggle={handleToggleTask}
+                                        onDelete={handleDeleteTask}
+                                    />
+                                </div>
 
-                        {/* Right Column: Calendar */}
-                        <div className="xl:col-span-1 flex flex-col gap-6">
-                            <CalendarWidget
-                                selectedDate={selectedDate}
-                                onSelectDate={setSelectedDate}
-                            />
+                                {/* Tomorrow's Tasks */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-pink-50 p-6">
+                                    <div className="flex items-center justify-between mb-5">
+                                        <h2 className="text-lg font-bold text-[#2D3E7A]">
+                                            Tomorrow
+                                            <span className="ml-2 text-xs font-medium bg-[#FFE6F0] text-[#E94B6F] px-2 py-0.5 rounded-full">
+                                                {tomorrowTasks.length}
+                                            </span>
+                                        </h2>
+                                    </div>
+                                    <TaskList
+                                        tasks={tomorrowTasks}
+                                        onToggle={handleToggleTask}
+                                        onDelete={handleDeleteTask}
+                                    />
+                                </div>
 
-                            {/* Quick Stats */}
-                            <div className="bg-gradient-to-br from-[#2D3E7A] to-[#1A2550] rounded-2xl p-6 text-white">
-                                <h3 className="font-semibold text-sm opacity-80 mb-4">This Week</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-3xl font-bold">{todayTasks.filter(t => t.done).length + 8}</p>
-                                        <p className="text-xs opacity-60 mt-1">Tasks Done</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-3xl font-bold text-[#E94B6F]">3</p>
-                                        <p className="text-xs opacity-60 mt-1">Overdue</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-3xl font-bold">85%</p>
-                                        <p className="text-xs opacity-60 mt-1">On Time</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-3xl font-bold">{todayTasks.filter(t => !t.done).length + tomorrowTasks.length}</p>
-                                        <p className="text-xs opacity-60 mt-1">Remaining</p>
+                                {/* Data Reports */}
+                                <DataReports />
+                            </div>
+
+                            {/* Right Column: Calendar */}
+                            <div className="xl:col-span-1 flex flex-col gap-6">
+                                <CalendarWidget
+                                    selectedDate={selectedDate}
+                                    onSelectDate={setSelectedDate}
+                                />
+
+                                {/* Quick Stats */}
+                                <div className="bg-gradient-to-br from-[#2D3E7A] to-[#1A2550] rounded-2xl p-6 text-white">
+                                    <h3 className="font-semibold text-sm opacity-80 mb-4">Task Overview</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-3xl font-bold">{completedCount}</p>
+                                            <p className="text-xs opacity-60 mt-1">Completed</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-3xl font-bold text-[#E94B6F]">{remainingCount}</p>
+                                            <p className="text-xs opacity-60 mt-1">Pending</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-3xl font-bold">
+                                                {tasks.length > 0 ? `${Math.round((completedCount / tasks.length) * 100)}%` : '0%'}
+                                            </p>
+                                            <p className="text-xs opacity-60 mt-1">Progress</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-3xl font-bold">{tasks.length}</p>
+                                            <p className="text-xs opacity-60 mt-1">Total</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </main>
 
