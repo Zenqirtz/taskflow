@@ -70,57 +70,40 @@ export default function ProfilePhotoCard() {
             />
 
             {photo ? (
-                /* Mode Foto Terpasang */
-                <div className="flex flex-col items-center text-center">
-                    <div className="relative group mb-4">
-                        <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shadow-md ring-4 ring-[#FFE6F0] bg-gray-100">
-                            <img
-                                src={photo}
-                                alt="Profile"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-
-                        {/* Overlay ganti/hapus saat hover */}
-                        <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current?.click()}
-                                title="Ganti foto"
-                                className="p-2 rounded-xl bg-white text-[#2D3E7A] hover:bg-gray-100 shadow transition-all active:scale-95"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleRemove}
-                                title="Hapus foto"
-                                className="p-2 rounded-xl bg-white text-[#E94B6F] hover:bg-red-50 shadow transition-all active:scale-95"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
+                /* Mode Foto Terpasang - Full Card */
+                <div className="relative group">
+                    <div className="w-full aspect-square rounded-xl overflow-hidden shadow-md bg-gray-100">
+                        <img
+                            src={photo}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                        />
                     </div>
 
-                    <h3 className="font-bold text-base text-[#2D3E7A] truncate max-w-full">
-                        {user?.name || 'My Profile'}
-                    </h3>
-                    <p className="text-xs text-gray-400 truncate max-w-full mt-0.5">
-                        {user?.email || 'user@taskflow.app'}
-                    </p>
-
-                    <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="mt-3 text-xs font-semibold text-[#E94B6F] hover:text-[#d43d5f] transition-colors"
-                    >
-                        Ganti Foto
-                    </button>
+                    {/* Overlay ganti/hapus saat hover */}
+                    <div className="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            title="Ganti foto"
+                            className="p-2 rounded-xl bg-white text-[#2D3E7A] hover:bg-gray-100 shadow transition-all active:scale-95"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleRemove}
+                            title="Hapus foto"
+                            className="p-2 rounded-xl bg-white text-[#E94B6F] hover:bg-red-50 shadow transition-all active:scale-95"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             ) : (
                 /* Mode Kosong - Area Upload */
