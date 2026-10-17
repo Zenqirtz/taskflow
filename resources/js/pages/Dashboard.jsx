@@ -5,6 +5,8 @@ import TaskList from '../components/TaskList';
 import DataReports from '../components/DataReports';
 import CreateTaskModal from '../components/CreateTaskModal';
 import EditTaskModal from '../components/EditTaskModal';
+import MyTasks from './MyTasks';
+import Timer from './Timer';
 import { getTasks, getCategories, createTask, updateTask, deleteTask } from '../lib/api';
 
 const today = new Date();
@@ -276,9 +278,11 @@ export default function Dashboard() {
                         <div className="py-20 flex justify-center items-center">
                             <div className="w-8 h-8 border-4 border-[#E94B6F] border-t-transparent rounded-full animate-spin" />
                         </div>
-                    ) : (
-                        /* Grid Layout */
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    ) : activePage === 'dashboard' ? (
+                        /* Dashboard Page */
+                        <>
+                            {/* Grid Layout */}
+                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                             {/* Left Column: Tasks */}
                             <div className="xl:col-span-2 flex flex-col gap-6">
                                 {/* Today's Tasks */}
@@ -377,6 +381,23 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        </>
+                    ) : activePage === 'tasks' ? (
+                        <MyTasks
+                            tasks={tasks}
+                            categories={categories}
+                            onCreateTask={handleCreateTask}
+                            onToggleTask={handleToggleTask}
+                            onDeleteTask={handleDeleteTask}
+                            onUpdateTask={handleUpdateTask}
+                            onOpenSidebar={() => setIsMobileSidebarOpen(true)}
+                        />
+                    ) : activePage === 'timer' ? (
+                        <Timer tasks={tasks} onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
+                    ) : (
+                        <div className="py-20 flex items-center justify-center">
+                            <p className="text-gray-400 text-sm">Page "{activePage}" coming soon...</p>
                         </div>
                     )}
                 </div>
