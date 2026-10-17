@@ -70,9 +70,9 @@ export default function ProfilePhotoCard() {
             />
 
             {photo ? (
-                /* Mode Foto Terpasang - Full Card */
+                /* Mode Foto Terpasang - Full Card Landscape */
                 <div className="relative group">
-                    <div className="w-full aspect-square rounded-xl overflow-hidden shadow-md bg-gray-100">
+                    <div className="w-full aspect-video rounded-xl overflow-hidden shadow-md bg-gray-100">
                         <img
                             src={photo}
                             alt="Profile"
