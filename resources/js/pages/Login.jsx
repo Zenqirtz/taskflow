@@ -97,14 +97,6 @@ export default function Login({ onSwitch }) {
                             Sign Up
                         </button>
                     </p>
-
-                    {/* Demo credentials hint */}
-                    <div className="mt-4 p-3 rounded-xl bg-[#FFF9F0] border border-pink-100">
-                        <p className="text-[10px] uppercase font-semibold text-gray-400 tracking-wider mb-1">Demo Account</p>
-                        <p className="text-xs text-gray-600">
-                            <strong>demo@taskflow.app</strong> / <strong>password</strong>
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
