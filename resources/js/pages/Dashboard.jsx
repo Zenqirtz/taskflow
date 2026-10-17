@@ -8,6 +8,7 @@ import EditTaskModal from '../components/EditTaskModal';
 import MyTasks from './MyTasks';
 import Timer from './Timer';
 import Notes from './Notes';
+import Reports from './Reports';
 import { getTasks, getCategories, createTask, updateTask, deleteTask } from '../lib/api';
 
 const today = new Date();
@@ -398,6 +399,8 @@ export default function Dashboard() {
                         <Timer tasks={tasks} onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
                     ) : activePage === 'notes' ? (
                         <Notes onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
+                    ) : activePage === 'reports' ? (
+                        <Reports tasks={tasks} categories={categories} onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
                     ) : (
                         <div className="py-20 flex items-center justify-center">
                             <p className="text-gray-400 text-sm">Page "{activePage}" coming soon...</p>

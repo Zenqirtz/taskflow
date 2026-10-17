@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export default function TaskList({ tasks, onToggle, onDelete, onEdit }) {
     if (!tasks || tasks.length === 0) {
