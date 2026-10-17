@@ -9,6 +9,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
     const [categoryId, setCategoryId] = useState(null);
     const [date, setDate] = useState(today);
     const [startTime, setStartTime] = useState('09:00');
+    const [priority, setPriority] = useState('medium');
     const [description, setDescription] = useState('');
     const [reminder, setReminder] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,6 +41,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
             title: title.trim(),
             category_id: categoryId,
             due_date: dueDateTime,
+            priority: priority,
             description: description.trim() || null,
             remind_at: reminder && dueDateTime ? dueDateTime : null,
         };
@@ -51,6 +53,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
             setTitle('');
             setDate(today);
             setStartTime('09:00');
+            setPriority('medium');
             setDescription('');
             setReminder(false);
             onClose();
@@ -128,6 +131,41 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
                         </div>
                     )}
 
+                    {/* Priority Selector */}
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                            Priority
+                        </label>
+                        <div className="flex gap-2">
+                            {['low', 'medium', 'high'].map((p) => {
+                                const isSelected = priority === p;
+                                const colors = {
+                                    low: { bg: '#E8F5E9', text: '#2E7D32', border: '#A5D6A7' },
+                                    medium: { bg: '#FFF3E0', text: '#E65100', border: '#FFB74D' },
+                                    high: { bg: '#FFEBEE', text: '#C62828', border: '#EF9A9A' },
+                                };
+                                const c = colors[p];
+                                return (
+                                    <button
+                                        type="button"
+                                        key={p}
+                                        onClick={() => setPriority(p)}
+                                        style={
+                                            isSelected
+                                                ? { backgroundColor: c.bg, color: c.text, borderColor: c.border }
+                                                : { backgroundColor: '#f5f5f5', color: '#999', borderColor: '#ddd' }
+                                        }
+                                        className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold border-2 transition-all capitalize ${
+                                            isSelected ? 'shadow-sm scale-105' : 'hover:bg-gray-100'
+                                        }`}
+                                    >
+                                        {p}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
                     {/* Date & Time Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
@@ -144,7 +182,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSave }) {
 
                         <div>
                             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                                Due Time
+                                Due Time (WIB)
                             </label>
                             <input
                                 type="time"
