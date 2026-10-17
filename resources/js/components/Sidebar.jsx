@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 const navItems = [
     {
@@ -49,9 +50,19 @@ const navItems = [
 ];
 
 export default function Sidebar({ activePage, onNavigate }) {
+    const { user, logout } = useAuth();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+    async function handleLogout() {
+        setIsLoggingOut(true);
+        await logout();
+        setIsLoggingOut(false);
+    }
+
+    const userInitial = user?.name?.charAt(0)?.toUpperCase() || 'U';
+
     return (
         <aside className="hidden md:flex w-64 flex-col bg-gradient-to-b from-[#2D3E7A] to-[#1A2550] min-h-screen px-4 py-6 shrink-0">
-
             {/* Logo */}
             <div className="flex items-center gap-3 px-2 mb-10">
                 <div className="w-9 h-9 bg-[#E94B6F] rounded-xl flex items-center justify-center">
@@ -83,17 +94,32 @@ export default function Sidebar({ activePage, onNavigate }) {
                 })}
             </nav>
 
-            {/* User Profile */}
-            <div className="mt-auto px-2">
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors cursor-pointer">
+            {/* User Profile & Logout */}
+            <div className="mt-auto px-2 flex flex-col gap-2">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10">
                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#E94B6F] to-[#D84458] flex items-center justify-center text-white font-bold text-sm shrink-0">
-                        U
+                        {userInitial}
                     </div>
-                    <div className="min-w-0">
-                        <p className="text-white text-sm font-medium truncate">User</p>
-                        <p className="text-white/50 text-xs truncate">user@taskflow.app</p>
+                    <div className="min-w-0 flex-1">
+                        <p className="text-white text-sm font-medium truncate">{user?.name || 'User'}</p>
+                        <p className="text-white/50 text-xs truncate">{user?.email || 'user@taskflow.app'}</p>
                     </div>
                 </div>
+
+                <button
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-50 transition-all"
+                >
+                    {isLoggingOut ? (
+                        <span className="w-3 h-3 border-2 border-white/40 border-t-transparent rounded-full animate-spin inline-block" />
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    )}
+                    {isLoggingOut ? 'Logging out...' : 'Sign Out'}
+                </button>
             </div>
         </aside>
     );
