@@ -19,10 +19,11 @@ class CategorySeeder extends Seeder
         }
 
         $categories = [
+            ['name' => 'General', 'color' => '#2D3E7A'],
             ['name' => 'Design', 'color' => '#E94B6F'],
-            ['name' => 'Dev', 'color' => '#2D3E7A'],
-            ['name' => 'Meeting', 'color' => '#FFE6F0'],
-            ['name' => 'Writing', 'color' => '#F59E0B'],
+            ['name' => 'Dev', 'color' => '#6366F1'],
+            ['name' => 'Meeting', 'color' => '#F59E0B'],
+            ['name' => 'Writing', 'color' => '#8B5CF6'],
             ['name' => 'Personal', 'color' => '#10B981'],
         ];
 
