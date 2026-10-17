@@ -158,11 +158,11 @@ export default function Dashboard() {
                         {/* Header */}
                     <div className="flex items-center justify-between gap-4 mb-6">
                         <div className="flex items-center gap-3">
-                            {/* Sidebar Toggle Button */}
+                            {/* Mobile Hamburger */}
                             <button
                                 type="button"
-                                onClick={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
-                                className="p-2 rounded-xl bg-white border border-pink-100 text-[#2D3E7A] hover:bg-gray-50 shadow-sm transition-all"
+                                onClick={() => setIsMobileSidebarOpen(true)}
+                                className="md:hidden p-2 rounded-xl bg-white border border-pink-100 text-[#2D3E7A] hover:bg-gray-50 shadow-sm"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
