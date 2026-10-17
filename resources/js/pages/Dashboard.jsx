@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Sidebar from '../components/Sidebar';
 import CalendarWidget from '../components/CalendarWidget';
+import ProfilePhotoCard from '../components/ProfilePhotoCard';
 import TaskList from '../components/TaskList';
 import DataReports from '../components/DataReports';
 import CreateTaskModal from '../components/CreateTaskModal';
@@ -351,6 +352,8 @@ export default function Dashboard() {
 
                             {/* Right Column: Calendar & Stats */}
                             <div className="xl:col-span-1 flex flex-col gap-6">
+                                <ProfilePhotoCard />
+
                                 <CalendarWidget
                                     selectedDate={selectedDate}
                                     onSelectDate={setSelectedDate}
