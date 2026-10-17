@@ -341,7 +341,7 @@ export default function Dashboard() {
                                 )}
 
                                 {/* Data Reports */}
-                                <DataReports />
+                                <DataReports tasks={tasks} />
                             </div>
 
                             {/* Right Column: Calendar & Stats */}
@@ -349,6 +349,7 @@ export default function Dashboard() {
                                 <CalendarWidget
                                     selectedDate={selectedDate}
                                     onSelectDate={setSelectedDate}
+                                    tasks={tasks}
                                 />
 
                                 {/* Quick Stats */}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 const DAYS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
@@ -10,7 +10,7 @@ function getFirstDayOfMonth(year, month) {
     return new Date(year, month, 1).getDay();
 }
 
-export default function CalendarWidget({ selectedDate, onSelectDate }) {
+export default function CalendarWidget({ selectedDate, onSelectDate, tasks = [] }) {
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth();
@@ -20,6 +20,20 @@ export default function CalendarWidget({ selectedDate, onSelectDate }) {
 
     const monthName = today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
+    // Map day-of-month -> task count for current month
+    const taskCountByDay = useMemo(() => {
+        const counts = {};
+        tasks.forEach((t) => {
+            if (!t.due_date) return;
+            const d = new Date(t.due_date);
+            if (d.getFullYear() === year && d.getMonth() === month) {
+                counts[d.getDate()] = (counts[d.getDate()] || 0) + 1;
+            }
+        });
+
+        return counts;
+    }, [tasks, year, month]);
+
     const blanks = Array.from({ length: firstDay }, (_, i) => (
         <div key={`blank-${i}`} className="w-9 h-9" />
     ));
@@ -28,11 +42,13 @@ export default function CalendarWidget({ selectedDate, onSelectDate }) {
         const day = i + 1;
         const isSelected = day === selectedDate;
         const isToday = day === todayDate;
+        const hasTasks = taskCountByDay[day] > 0;
+
         return (
             <button
                 key={day}
                 onClick={() => onSelectDate(day)}
-                className={`w-9 h-9 rounded-full text-xs font-medium transition-all flex items-center justify-center ${
+                className={`relative w-9 h-9 rounded-full text-xs font-medium transition-all flex items-center justify-center ${
                     isSelected
                         ? 'bg-white text-[#2D3E7A] font-bold shadow-md'
                         : isToday
@@ -41,6 +57,13 @@ export default function CalendarWidget({ selectedDate, onSelectDate }) {
                 }`}
             >
                 {day}
+                {hasTasks && (
+                    <span
+                        className={`absolute bottom-0.5 w-1 h-1 rounded-full ${
+                            isSelected ? 'bg-[#E94B6F]' : 'bg-white'
+                        }`}
+                    />
+                )}
             </button>
         );
     });
