@@ -67,7 +67,7 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
 
         return (
             <div
-                className={`flex flex-col h-full bg-gradient-to-b from-[#2D3E7A] to-[#1A2550] py-5 select-none transition-all duration-300 ${
+                className={`flex flex-col h-full bg-gradient-to-b from-[#2D3E7A] to-[#1A2550] py-5 select-none transition-all duration-500 ease-in-out ${
                     collapsed ? 'px-2 w-[72px] items-center' : 'px-4 w-64'
                 }`}
             >
@@ -235,7 +235,7 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
         <>
             {/* Desktop Persistent Sidebar */}
             <aside
-                className={`hidden md:block min-h-screen shrink-0 transition-all duration-300 ease-in-out ${
+                className={`hidden md:block min-h-screen shrink-0 transition-all duration-500 ease-in-out ${
                     isCollapsed ? 'w-[72px]' : 'w-64'
                 }`}
             >
@@ -252,7 +252,7 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
 
             {/* Mobile Drawer (Always Full Width) */}
             <aside
-                className={`fixed top-0 bottom-0 left-0 z-50 w-64 md:hidden transform transition-transform duration-300 ease-in-out ${
+                className={`fixed top-0 bottom-0 left-0 z-50 w-64 md:hidden transform transition-transform duration-500 ease-in-out ${
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >

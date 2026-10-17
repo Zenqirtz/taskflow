@@ -58,9 +58,9 @@ export default function EditTaskModal({ isOpen, task, onClose, onSave }) {
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
             <div
-                className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-pink-100"
+                className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-pink-100 animate-slide-up"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}

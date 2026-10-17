@@ -151,7 +151,7 @@ export default function Dashboard() {
 
             {/* Main Content */}
             {activePage === 'dashboard' ? (
-                <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
                     <div className="max-w-7xl mx-auto">
                         {/* Header */}
                     <div className="flex items-center justify-between gap-4 mb-6">
@@ -390,21 +390,29 @@ export default function Dashboard() {
                 </div>
             </main>
             ) : activePage === 'tasks' ? (
-                <MyTasks
-                    tasks={tasks}
-                    categories={categories}
-                    onCreateTask={handleCreateTask}
-                    onToggleTask={handleToggleTask}
-                    onDeleteTask={handleDeleteTask}
-                    onUpdateTask={handleUpdateTask}
-                    onOpenSidebar={() => setIsMobileSidebarOpen(true)}
-                />
+                <div className="flex-1 flex flex-col overflow-hidden animate-fade-in">
+                    <MyTasks
+                        tasks={tasks}
+                        categories={categories}
+                        onCreateTask={handleCreateTask}
+                        onToggleTask={handleToggleTask}
+                        onDeleteTask={handleDeleteTask}
+                        onUpdateTask={handleUpdateTask}
+                        onOpenSidebar={() => setIsMobileSidebarOpen(true)}
+                    />
+                </div>
             ) : activePage === 'timer' ? (
-                <Timer tasks={tasks} onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
+                <div className="flex-1 flex flex-col overflow-hidden animate-fade-in">
+                    <Timer tasks={tasks} onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
+                </div>
             ) : activePage === 'notes' ? (
-                <Notes onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
+                <div className="flex-1 flex flex-col overflow-hidden animate-fade-in">
+                    <Notes onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
+                </div>
             ) : activePage === 'reports' ? (
-                <Reports tasks={tasks} categories={categories} onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
+                <div className="flex-1 flex flex-col overflow-hidden animate-fade-in">
+                    <Reports tasks={tasks} categories={categories} onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
+                </div>
             ) : (
                 <div className="flex-1 flex items-center justify-center">
                     <p className="text-gray-400 text-sm">Page "{activePage}" coming soon...</p>

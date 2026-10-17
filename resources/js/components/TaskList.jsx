@@ -11,7 +11,7 @@ export default function TaskList({ tasks, onToggle, onDelete, onEdit }) {
 
     return (
         <div className="flex flex-col gap-3">
-            {tasks.map((task) => {
+            {tasks.map((task, index) => {
                 const isDone = task.status === 'completed' || task.done;
                 const catName = task.category?.name || task.category || 'General';
                 const catColor = task.category?.color || '#2D3E7A';
@@ -23,23 +23,25 @@ export default function TaskList({ tasks, onToggle, onDelete, onEdit }) {
                     timeDisplay = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 }
 
+                const staggerClass = index < 8 ? `stagger-${index + 1}` : '';
+
                 return (
                     <div
                         key={task.id}
-                        className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
+                        className={`animate-slide-up ${staggerClass} flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 ${
                             isDone
                                 ? 'bg-gray-50 border-gray-100 opacity-60'
-                                : 'bg-white border-pink-50 hover:shadow-md hover:border-pink-100'
+                                : 'bg-white border-pink-50 hover:shadow-md hover:border-pink-100 hover:-translate-y-0.5'
                         }`}
                     >
                         {/* Checkbox */}
                         <button
                             type="button"
                             onClick={() => onToggle && onToggle(task)}
-                            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all duration-300 ${
                                 isDone
-                                    ? 'bg-[#E94B6F] border-[#E94B6F]'
-                                    : 'border-gray-300 hover:border-[#E94B6F]'
+                                    ? 'bg-[#E94B6F] border-[#E94B6F] scale-110'
+                                    : 'border-gray-300 hover:border-[#E94B6F] hover:scale-110'
                             }`}
                         >
                             {isDone && (
