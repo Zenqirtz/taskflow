@@ -13,3 +13,8 @@
     --color-cream: #FFF9F0;
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 }
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

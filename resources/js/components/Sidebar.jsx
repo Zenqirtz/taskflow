@@ -49,7 +49,7 @@ const navItems = [
     },
 ];
 
-export default function Sidebar({ activePage, onNavigate }) {
+export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
     const { user, logout } = useAuth();
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -61,16 +61,29 @@ export default function Sidebar({ activePage, onNavigate }) {
 
     const userInitial = user?.name?.charAt(0)?.toUpperCase() || 'U';
 
-    return (
-        <aside className="hidden md:flex w-64 flex-col bg-gradient-to-b from-[#2D3E7A] to-[#1A2550] min-h-screen px-4 py-6 shrink-0">
-            {/* Logo */}
-            <div className="flex items-center gap-3 px-2 mb-10">
-                <div className="w-9 h-9 bg-[#E94B6F] rounded-xl flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
+    const sidebarContent = (
+        <div className="flex flex-col h-full bg-gradient-to-b from-[#2D3E7A] to-[#1A2550] px-4 py-6">
+            {/* Header: Logo + Close on Mobile */}
+            <div className="flex items-center justify-between px-2 mb-8">
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-[#E94B6F] rounded-xl flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <span className="text-white font-bold text-lg tracking-wide">TaskFlow</span>
                 </div>
-                <span className="text-white font-bold text-lg tracking-wide">TaskFlow</span>
+                {/* Mobile close button */}
+                {onClose && (
+                    <button
+                        onClick={onClose}
+                        className="md:hidden text-white/60 hover:text-white p-1 rounded-lg"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                )}
             </div>
 
             {/* Navigation */}
@@ -80,7 +93,10 @@ export default function Sidebar({ activePage, onNavigate }) {
                     return (
                         <button
                             key={item.id}
-                            onClick={() => onNavigate(item.id)}
+                            onClick={() => {
+                                onNavigate(item.id);
+                                if (onClose) onClose();
+                            }}
                             className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                                 isActive
                                     ? 'bg-[#E94B6F] text-white shadow-lg shadow-pink-900/30'
@@ -121,6 +137,32 @@ export default function Sidebar({ activePage, onNavigate }) {
                     {isLoggingOut ? 'Logging out...' : 'Sign Out'}
                 </button>
             </div>
-        </aside>
+        </div>
+    );
+
+    return (
+        <>
+            {/* Desktop persistent sidebar */}
+            <aside className="hidden md:block w-64 min-h-screen shrink-0">
+                {sidebarContent}
+            </aside>
+
+            {/* Mobile Drawer Backdrop */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden animate-fade-in"
+                    onClick={onClose}
+                />
+            )}
+
+            {/* Mobile Drawer */}
+            <aside
+                className={`fixed top-0 bottom-0 left-0 z-50 w-72 md:hidden transform transition-transform duration-300 ease-in-out ${
+                    isOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}
+            >
+                {sidebarContent}
+            </aside>
+        </>
     );
 }
