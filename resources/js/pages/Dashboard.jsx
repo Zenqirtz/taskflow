@@ -109,8 +109,16 @@ export default function Dashboard() {
     }
 
     async function handleDeleteTask(taskId) {
-        await deleteTask(taskId);
+        // Optimistic delete - remove from UI immediately
         setTasks((prev) => prev.filter((t) => t.id !== taskId));
+
+        try {
+            await deleteTask(taskId);
+        } catch (err) {
+            // On error, reload tasks to restore
+            console.error('Delete failed', err);
+            loadData();
+        }
     }
 
     function handleOpenEdit(task) {
